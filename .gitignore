@@ -1,0 +1,38 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# 环境变量 (含 API 配置，不要提交)
+.env
+
+# 向量数据库持久化数据
+chroma_db/
+
+# SQLite 持久化（会话历史 / KB 注册表）
+db/
+
+# 数据文档（示例语料 data/rag_*.md 需要提交，故只忽略用户自己放的文件）
+data/*.txt
+data/*.pdf
+!data/.gitkeep
+
+# Runtime logs (do not commit local server/UI logs)
+logs/
+
+# SQLite 库文件（项目根目录的 sessions.db / kb_registry.db 等）
+*.db
+
+# Chroma vector-store backups
+chroma_db*.tgz
+
+# Extra env files; keep the example
+.env.*
+!.env.example
+
+# 测试临时目录（tests 会在项目内建 .rag_test_* 以避开 /tmp 权限问题）
+.rag_test_*/
+
+# 评估报告输出
+eval/report*.json

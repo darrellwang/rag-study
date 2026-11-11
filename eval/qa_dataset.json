@@ -1,0 +1,98 @@
+[
+  {
+    "question": "BM25 的打分公式里 k1 和 b 两个参数分别控制什么？",
+    "expected_sources": ["rag_retrieval.md"],
+    "expected_keywords": ["k1", "词频", "b", "长度"],
+    "reference_answer": "k1 控制词频饱和速度，b 控制文档长度归一化强度。k1 常取 1.2~2.0，b 常取 0.75。"
+  },
+  {
+    "question": "为什么向量检索的分数不能直接和 BM25 分数相加？应该怎么融合？",
+    "expected_sources": ["rag_retrieval.md"],
+    "expected_keywords": ["量纲", "RRF", "名次"],
+    "reference_answer": "两者量纲不同。推荐用 RRF，只使用名次计算 1/(k+rank) 之和，k 默认 60。"
+  },
+  {
+    "question": "重排为什么比召回准确率高，标准的候选数配比是多少？",
+    "expected_sources": ["rag_retrieval.md"],
+    "expected_keywords": ["cross-encoder", "召回"],
+    "reference_answer": "召回用双塔独立编码，重排用交叉编码让查询和文档一起进模型，精度更高。通常召回 20~50 条，重排后取前 3~5 条。"
+  },
+  {
+    "question": "中文文档的 chunk_size 应该设多大，overlap 取多少合适？",
+    "expected_sources": ["rag_indexing.md"],
+    "expected_keywords": ["300", "800", "重叠"],
+    "reference_answer": "中文常见区间 300~800 字符，overlap 取 chunk_size 的 10%~20%。"
+  },
+  {
+    "question": "怎么做到同一份文件重复上传不会在知识库里产生重复内容？",
+    "expected_sources": ["rag_indexing.md"],
+    "expected_keywords": ["sha1", "id", "跳过"],
+    "reference_answer": "用内容寻址：chunk id = sha1(kb_id + source + 正文)，入库前查 id 是否存在，存在则跳过。"
+  },
+  {
+    "question": "Markdown 结构感知切分有什么特别技巧能提升长文档问答准确率？",
+    "expected_sources": ["rag_indexing.md"],
+    "expected_keywords": ["标题路径"],
+    "reference_answer": "把 H1 > H2 > H3 的标题路径拼进 chunk 正文开头，让孤立片段自带定位信息。"
+  },
+  {
+    "question": "LMStudio 的 embedding 接口报 400 错误，可能是什么原因？",
+    "expected_sources": ["rag_indexing.md"],
+    "expected_keywords": ["check_embedding_ctx_length"],
+    "reference_answer": "LMStudio 只接受字符串，需要设置 check_embedding_ctx_length=False 关闭 token 长度检查。"
+  },
+  {
+    "question": "Chroma 持久化目录下为什么会出现一堆 UUID 名字的目录，会造成什么问题？",
+    "expected_sources": ["rag_indexing.md"],
+    "expected_keywords": ["chroma.sqlite3"],
+    "reference_answer": "那是 Chroma 的内部段目录。按子目录列举知识库会把它们误认成知识库，应只认包含 chroma.sqlite3 的子目录。"
+  },
+  {
+    "question": "HyDE 的原理是什么，它有什么风险？",
+    "expected_sources": ["rag_generation_eval.md"],
+    "expected_keywords": ["假设性答案", "幻觉"],
+    "reference_answer": "先让模型写一段假设性答案再用它检索，因为答案与文档文体术语更接近。风险是幻觉出的术语可能带偏检索。"
+  },
+  {
+    "question": "评估 RAG 时检索层有哪些指标，MRR 衡量的是什么？",
+    "expected_sources": ["rag_generation_eval.md"],
+    "expected_keywords": ["Hit@k", "MRR", "nDCG", "名次"],
+    "reference_answer": "Hit@k、Recall@k、MRR、nDCG@k。MRR 是首个正确结果名次倒数的均值，衡量正确答案排得够不够前。"
+  },
+  {
+    "question": "用 LLM-as-judge 打分时有什么需要注意的偏差？",
+    "expected_sources": ["rag_generation_eval.md"],
+    "expected_keywords": ["评判模型", "偏高"],
+    "reference_answer": "评判模型最好强于被测模型，否则自己给自己打分会系统性偏高。"
+  },
+  {
+    "question": "RAG 效果不好时应该按什么顺序排查？",
+    "expected_sources": ["rag_generation_eval.md", "rag_retrieval.md"],
+    "expected_keywords": ["检索", "提示词"],
+    "reference_answer": "先看检索层指标，差就修索引和召回，不要碰提示词；只有检索层良好而生成层差时才是提示词或模型的问题。"
+  },
+  {
+    "question": "什么时候需要用 MMR 而不是普通的 top-k 检索？",
+    "expected_sources": ["rag_retrieval.md"],
+    "expected_keywords": ["多样性", "重复"],
+    "reference_answer": "知识库存在大量近重复内容时，朴素 top-k 会被几乎相同的片段占满，MMR 通过 lambda_mult 平衡相关性与多样性来缓解。"
+  },
+  {
+    "question": "知识库问答里为什么要有拒答机制？",
+    "expected_sources": ["rag_generation_eval.md"],
+    "expected_keywords": ["拒答", "门槛"],
+    "reference_answer": "检索为空或最高分低于门槛时应直接拒答，不进入生成。答错的代价远高于不答。"
+  },
+  {
+    "question": "元数据过滤除了提升检索精度还有什么不可替代的作用？",
+    "expected_sources": ["rag_indexing.md"],
+    "expected_keywords": ["权限", "安全"],
+    "reference_answer": "多租户和权限隔离场景下它是安全边界，属于硬需求而不是优化手段。"
+  },
+  {
+    "question": "太阳系一共有几颗行星？",
+    "expected_sources": [],
+    "expected_keywords": [],
+    "reference_answer": "（知识库外问题，用于检验拒答能力，正确行为是拒答）"
+  }
+]

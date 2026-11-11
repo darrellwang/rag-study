@@ -1,0 +1,49 @@
+# 本地知识库（容器化 API + UI 层）
+#
+# 重要：推理仍在 Windows 上的 LMStudio 完成。WSL 容器内访问宿主 LMStudio
+# 不能用 localhost（那指向容器自身），需用 host.docker.internal（映射到宿主网关）。
+# 因此 .env 中的 LMSTUDIO_BASE_URL 应改为：
+#   LMSTUDIO_BASE_URL=http://host.docker.internal:1234/v1
+# （已在本 compose 的 environment 中通过 ${LMSTUDIO_BASE_URL} 注入，
+#   请确保在 .env 里把它改成上面的宿主地址。）
+
+services:
+  api:
+    build: .
+    command: uvicorn src.api:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      - LMSTUDIO_BASE_URL=${LMSTUDIO_BASE_URL}
+      - LMSTUDIO_API_KEY=${LMSTUDIO_API_KEY}
+      - LLM_MODEL=${LLM_MODEL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - CHROMA_PERSIST_DIR=/app/chroma_db
+      - DOCS_DIR=/app/data
+    # 让容器能经 host.docker.internal 访问宿主（Windows LMStudio）
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - chroma_data:/app/chroma_db
+      - doc_data:/app/data
+      - db_data:/app/db
+    restart: unless-stopped
+
+  ui:
+    build: .
+    command: streamlit run src/ui.py --server.address 0.0.0.0 --server.port 8501 --server.baseUrlPath ""
+    ports:
+      - "8501:8501"
+    environment:
+      - KB_API_URL=http://api:8000
+      - LMSTUDIO_BASE_URL=${LMSTUDIO_BASE_URL}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  chroma_data:
+  doc_data:
+  db_data:

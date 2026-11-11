@@ -1,0 +1,42 @@
+# LangChain + LangGraph + RAG 学习环境依赖
+# Python 3.12
+
+# 核心框架
+langchain==1.3.11
+langgraph==1.2.6
+langchain-core==1.4.8
+langchain-community==0.4.2
+langchain-openai==1.3.3
+langchain-text-splitters==1.1.2
+
+# 向量数据库
+chromadb==1.5.9
+langchain-chroma==1.1.0
+
+# 文档加载
+pypdf==6.14.2
+
+# Web 服务
+fastapi==0.115.6
+uvicorn==0.34.0
+python-multipart==0.0.20
+# requests 由 streamlit 间接引入，此处不锁版本以避免与 langchain 依赖冲突
+streamlit==1.44.1
+
+# 配置管理
+python-dotenv==1.2.2
+
+# 分词器（按 token 切分时用；首次使用需联网下载编码表，
+# 离线环境下 rag/chunking.py 会自动降级为字符切分）
+tiktoken==0.13.0
+
+# ---- 可选依赖（按需手动安装，不装也能跑）----
+# BM25 稀疏检索在 src/rag/bm25.py 中自行实现，无需 rank_bm25。
+#
+# cross-encoder 重排（比 LLM 重排快且更准，需下载模型 ~1GB）：
+#   pip install sentence-transformers
+#   见 src/rag/rerank.py:cross_encoder_rerank
+#
+# 单元测试用标准库 unittest 即可运行：
+#   python -m unittest discover -s tests -v
+# 想用 pytest 则： pip install pytest
